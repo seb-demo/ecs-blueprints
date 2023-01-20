@@ -23,4 +23,4 @@ container_name  = "ecsdemo-crystal"
 container_port = 3000
 
 buildspec_path  = "./application-code/ecsdemo-crystal/templates/buildspec.yml"
-folder_path     = "./application-code/ecsdemo-nodejs/."
+folder_path     = "./application-code/ecsdemo-crystal/."

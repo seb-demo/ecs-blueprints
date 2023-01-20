@@ -47,13 +47,13 @@ variable "ecs_task_execution_role_name" {
 variable "buildspec_path" {
   description = "The location of the buildspec file"
   type        = string
-  default     = "./application-code/ecsdemo-nodejs/templates/buildspec.yml"
+  default     = "./application-code/ecsdemo-crystal/templates/buildspec.yml"
 }
 
 variable "folder_path" {
   description = "The location of the application code and Dockerfile files"
   type        = string
-  default     = "./application-code/ecsdemo-nodejs/."
+  default     = "./application-code/ecsdemo-crystal/."
 }
 
 variable "repository_owner" {

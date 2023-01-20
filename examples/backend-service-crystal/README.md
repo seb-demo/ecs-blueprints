@@ -45,7 +45,7 @@ The second half of `main.tf` focuses on creating the CI/CD pipeline using AWS Co
 * CodeBuild for building container images
     * Needs the S3 bucket created above
     * IAM role for the build service
-    * The *buildspec_path* is a key variable to note. It points to the [buildspec.yml](../../application-code/ecsdemo-nodejs/templates/buildspec.yml) file which has all the instructions not only for building the container but also for pre-build processing and post-build artifacts preparation required for deployment.
+    * The *buildspec_path* is a key variable to note. It points to the [buildspec.yml](../../application-code/ecsdemo-crystal/templates/buildspec.yml) file which has all the instructions not only for building the container but also for pre-build processing and post-build artifacts preparation required for deployment.
     * A set of environment variables including repository URL and folder path.
 * CodePipeline to listen for changes to the repository and trigger build and deployment.
     * Needs the S3 bucket created above
@@ -58,4 +58,4 @@ The second half of `main.tf` focuses on creating the CI/CD pipeline using AWS Co
     * The image definition file name which contains mapping of container name and container image. These are the containers used in the task.
     * IAM role
 
-Note that the CodeBuild and CodePipeline services are provisioned and configured here. However, they primarily interact with the *application-code/ecsdemo-nodejs* repository. CodePipeline is listening for changes and checkins to that repository. And CodeBuild is using the *Dockerfile* and *templates/* files from that application folder.
+Note that the CodeBuild and CodePipeline services are provisioned and configured here. However, they primarily interact with the *application-code/ecsdemo-crystal* repository. CodePipeline is listening for changes and checkins to that repository. And CodeBuild is using the *Dockerfile* and *templates/* files from that application folder.
