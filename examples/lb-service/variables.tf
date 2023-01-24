@@ -103,8 +103,14 @@ variable "desired_count" {
   default     = 1
 }
 
-variable "backend_svc_endpoint" {
-  description = "The FQDN DNS name of the backend service"
+variable "backend_svc_nodejs_endpoint" {
+  description = "The FQDN DNS name of the nodejs backend service"
+  type        = string
+  default     = ""
+}
+
+variable "backend_svc_crystal_endpoint" {
+  description = "The FQDN DNS name of the crystal backend service"
   type        = string
   default     = ""
 }
