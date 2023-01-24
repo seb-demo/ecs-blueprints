@@ -178,6 +178,32 @@ resource "aws_service_discovery_service" "sd_service" {
   }
 }
 
+resource "aws_iam_policy" "ecs_exec_policy" {
+  name   = "ECSTaskExecutionExecPolicy"
+  policy = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+       "Effect": "Allow",
+       "Action": [
+            "ssmmessages:CreateControlChannel",
+            "ssmmessages:CreateDataChannel",
+            "ssmmessages:OpenControlChannel",
+            "ssmmessages:OpenDataChannel",
+            "s3:PutObject",
+            "logs:DescribeLogGroups",
+            "logs:CreateLogStream",
+            "logs:DescribeLogStreams",
+            "logs:PutLogEvents"
+       ],
+      "Resource": "*"
+      }
+   ]
+}
+EOF
+}
+
 module "ecs_service_definition" {
   source = "../../modules/ecs-service"
 
@@ -202,7 +228,24 @@ module "ecs_service_definition" {
   deployment_controller = "ECS"
 
   # Task Definition
-  attach_task_role_policy = false
+  attach_task_role_policy = true
+  task_role_policy        = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+       "Effect": "Allow",
+       "Action": [
+            "ssmmessages:CreateControlChannel",
+            "ssmmessages:CreateDataChannel",
+            "ssmmessages:OpenControlChannel",
+            "ssmmessages:OpenDataChannel"
+       ],
+      "Resource": "*"
+      }
+   ]
+}
+EOF
   lb_container_port       = var.container_port
   lb_container_name       = var.container_name
   cpu                     = var.cpu
@@ -222,6 +265,9 @@ module "ecs_service_definition" {
         containerPort : var.container_port
         hostPort : var.container_port
       }]
+      linux_parameters = {
+          initProcessEnabled = true
+        }
     }
   }
 

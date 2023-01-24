@@ -24,6 +24,15 @@ locals {
 # ECS Blueprint
 ################################################################################
 
+resource "aws_s3_bucket" "ecs_exec" {
+  bucket        = local.name
+  #bucket_prefix = "exec"
+
+  #force_destroy       = yes
+  #object_lock_enabled = no
+  tags                = local.tags
+}
+
 module "ecs" {
   source  = "terraform-aws-modules/ecs/aws"
   version = "~> 4.0"
@@ -35,6 +44,10 @@ module "ecs" {
       logging = "OVERRIDE"
       log_configuration = {
         cloud_watch_log_group_name = aws_cloudwatch_log_group.this.name
+        cloud_watch_encryption_enabled = true
+        s3_bucket_name = aws_s3_bucket.ecs_exec.bucket
+        s3_encryption_enabled = true
+        s3_key_prefix = "ecs-blueprint"
       }
     }
   }
