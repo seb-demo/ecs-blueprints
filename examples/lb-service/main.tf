@@ -248,7 +248,7 @@ module "ecs_service_definition" {
       }]
       linux_parameters = {
           initProcessEnabled = true
-        }
+      }
     }
   }
 
