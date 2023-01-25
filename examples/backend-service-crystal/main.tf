@@ -18,6 +18,28 @@ locals {
   tag_val_vpc            = var.vpc_tag_value == "" ? var.core_stack_name : var.vpc_tag_value
   tag_val_private_subnet = var.private_subnets_tag_value == "" ? "${var.core_stack_name}-private-" : var.private_subnets_tag_value
 
+  task_role_policy = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+       "Effect": "Allow",
+       "Action": [
+            "ssmmessages:CreateControlChannel",
+            "ssmmessages:CreateDataChannel",
+            "ssmmessages:OpenControlChannel",
+            "ssmmessages:OpenDataChannel",
+            "s3:PutObject",
+            "logs:DescribeLogGroups",
+            "logs:CreateLogStream",
+            "logs:DescribeLogStreams",
+            "logs:PutLogEvents"            
+       ],
+      "Resource": "*"
+      }
+   ]
+}
+EOF
 }
 
 ################################################################################
@@ -129,7 +151,8 @@ module "ecs_service_definition" {
   deployment_controller = "ECS"
 
   # Task Definition
-  attach_task_role_policy = false
+  attach_task_role_policy = true
+  task_role_policy        = local.task_role_policy
   lb_container_port       = var.container_port
   cpu                     = var.cpu
   memory                  = var.memory
@@ -142,6 +165,15 @@ module "ecs_service_definition" {
     main_container = {
       name  = var.container_name
       image = module.container_image_ecr.repository_url
+
+      port_mappings = [{
+        protocol : "tcp",
+        containerPort : var.container_port
+        hostPort : var.container_port
+      }]
+      linux_parameters = {
+          initProcessEnabled = true
+      }
     }
   }
 

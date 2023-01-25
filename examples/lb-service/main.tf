@@ -19,6 +19,29 @@ locals {
   tag_val_private_subnet = var.private_subnets_tag_value == "" ? "${var.core_stack_name}-private-" : var.private_subnets_tag_value
   tag_val_public_subnet  = var.public_subnets_tag_value == "" ? "${var.core_stack_name}-public-" : var.public_subnets_tag_value
 
+  task_role_policy = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+       "Effect": "Allow",
+       "Action": [
+            "ssmmessages:CreateControlChannel",
+            "ssmmessages:CreateDataChannel",
+            "ssmmessages:OpenControlChannel",
+            "ssmmessages:OpenDataChannel",
+            "s3:PutObject",
+            "logs:DescribeLogGroups",
+            "logs:CreateLogStream",
+            "logs:DescribeLogStreams",
+            "logs:PutLogEvents"            
+       ],
+      "Resource": "*"
+      }
+   ]
+}
+EOF
+
 }
 
 ################################################################################
@@ -203,28 +226,7 @@ module "ecs_service_definition" {
 
   # Task Definition
   attach_task_role_policy = true
-  task_role_policy        = <<EOF
-{
-   "Version": "2012-10-17",
-   "Statement": [
-       {
-       "Effect": "Allow",
-       "Action": [
-            "ssmmessages:CreateControlChannel",
-            "ssmmessages:CreateDataChannel",
-            "ssmmessages:OpenControlChannel",
-            "ssmmessages:OpenDataChannel",
-            "s3:PutObject",
-            "logs:DescribeLogGroups",
-            "logs:CreateLogStream",
-            "logs:DescribeLogStreams",
-            "logs:PutLogEvents"            
-       ],
-      "Resource": "*"
-      }
-   ]
-}
-EOF
+  task_role_policy        = local.task_role_policy
   lb_container_port       = var.container_port
   lb_container_name       = var.container_name
   cpu                     = var.cpu
