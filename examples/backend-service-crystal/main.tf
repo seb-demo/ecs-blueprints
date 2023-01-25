@@ -165,8 +165,9 @@ module "ecs_service_definition" {
     main_container = {
       name  = var.container_name
       image = module.container_image_ecr.repository_url
-
+      readonly_root_filesystem = false
       port_mappings = [{
+        name: "crystal",
         protocol : "tcp",
         containerPort : var.container_port
         hostPort : var.container_port
