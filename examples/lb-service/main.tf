@@ -178,32 +178,6 @@ resource "aws_service_discovery_service" "sd_service" {
   }
 }
 
-resource "aws_iam_policy" "ecs_exec_policy" {
-  name   = "ECSTaskExecutionExecPolicy"
-  policy = <<EOF
-{
-   "Version": "2012-10-17",
-   "Statement": [
-       {
-       "Effect": "Allow",
-       "Action": [
-            "ssmmessages:CreateControlChannel",
-            "ssmmessages:CreateDataChannel",
-            "ssmmessages:OpenControlChannel",
-            "ssmmessages:OpenDataChannel",
-            "s3:PutObject",
-            "logs:DescribeLogGroups",
-            "logs:CreateLogStream",
-            "logs:DescribeLogStreams",
-            "logs:PutLogEvents"
-       ],
-      "Resource": "*"
-      }
-   ]
-}
-EOF
-}
-
 module "ecs_service_definition" {
   source = "../../modules/ecs-service"
 
@@ -239,7 +213,12 @@ module "ecs_service_definition" {
             "ssmmessages:CreateControlChannel",
             "ssmmessages:CreateDataChannel",
             "ssmmessages:OpenControlChannel",
-            "ssmmessages:OpenDataChannel"
+            "ssmmessages:OpenDataChannel",
+            "s3:PutObject",
+            "logs:DescribeLogGroups",
+            "logs:CreateLogStream",
+            "logs:DescribeLogStreams",
+            "logs:PutLogEvents"            
        ],
       "Resource": "*"
       }

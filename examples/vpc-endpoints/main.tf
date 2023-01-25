@@ -108,6 +108,12 @@ module "vpc_endpoints" {
 
       tags = { Name = "${local.name}-ssm" }
     },
+    ssmmessages = {
+      service             = "ssmmessages"
+      private_dns_enabled = true
+
+      tags = { Name = "${local.name}-ssm" }
+    },    
     secrets_manager = {
       service             = "secretsmanager"
       private_dns_enabled = true

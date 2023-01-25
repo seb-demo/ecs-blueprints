@@ -14,6 +14,7 @@ core_stack_name      = "ecs-blueprint-infra"
 service_name         = "ecsdemo-frontend"
 namespace            = "default"
 backend_svc_endpoint = "http://ecsdemo-nodejs.default.ecs-blueprint-infra.local:3000"
+backend_svc_crystal_endpoint = "http://ecsdemo-crystal.default.ecs-blueprint-infra.local:3000/crystal"
 desired_count        = 3
 cpu                  = 256
 memory               = 512
