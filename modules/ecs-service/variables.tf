@@ -45,6 +45,16 @@ variable "service_registry_list" {
   default = []
 }
 
+variable "service_connect_configuration" {
+  description = "A list ofservice connect configuration for the service"
+#  type = list(object({
+##    namespace = string
+#    service = any
+#  }))
+  type = any
+  default = []
+}
+
 variable "platform_version" {
   description = "Platform version on which to run your service"
   type        = string

@@ -51,6 +51,14 @@ data "aws_service_discovery_dns_namespace" "sd_namespace" {
   type = "DNS_PRIVATE"
 }
 
+# Manually import : terraform import aws_service_discovery_http_namespace.this ns-rpkoz7xthaop23mv
+resource "aws_service_discovery_http_namespace" "this" {
+  name = "${var.namespace}.${data.aws_ecs_cluster.core_infra.cluster_name}.local"
+}
+#data "aws_service_discovery_http_namespace" "this" {
+#  name = "${var.namespace}.${data.aws_ecs_cluster.core_infra.cluster_name}.local"
+#}
+
 ################################################################################
 # ECS Blueprint
 ################################################################################
@@ -126,6 +134,28 @@ module "ecs_service_definition" {
   service_registry_list = [{
     registry_arn = aws_service_discovery_service.sd_service.arn
   }]
+  service_connect_configuration = [{
+    namespace = aws_service_discovery_http_namespace.this.arn
+    #namespace = data.aws_service_discovery_http_namespace.this.id 
+    service = {
+      port_name = "nodejs",
+      discovery_name = "nodejs"
+      client_aliases = {
+        port = 3000
+        dns_name = "nodejs"
+      }
+    }
+    log_configuration = {
+      log_driver = "awslogs"
+      options = {
+        "awslogs-create-group" : "true"
+        "awslogs-group" : "/ecs/ecsdemo-nodejs"
+        "awslogs-region" : var.aws_region
+        "awslogs-stream-prefix" : "ecs"
+      }
+    }
+  }]
+  
   deployment_controller = "ECS"
 
   # Task Definition
@@ -142,6 +172,15 @@ module "ecs_service_definition" {
     main_container = {
       name  = var.container_name
       image = module.container_image_ecr.repository_url
+      readonly_root_filesystem = false
+      port_mappings = [{
+        protocol : "tcp",
+        containerPort : var.container_port
+        hostPort : var.container_port
+      }]
+      linux_parameters = {
+          initProcessEnabled = true
+      }      
     }
   }
 

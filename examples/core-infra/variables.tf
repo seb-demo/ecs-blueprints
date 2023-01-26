@@ -33,3 +33,9 @@ variable "enable_secerts_manager_read_access" {
   type        = bool
   default     = true
 }
+
+variable "enable_service_connect" {
+  description = "Enable Service Connect Feature"
+  type        = bool
+  default     = true
+}

@@ -27,11 +27,7 @@ locals {
 
 resource "aws_s3_bucket" "ecs_exec" {
   bucket        = local.name
-  #bucket_prefix = "exec"
-
-  #force_destroy       = yes
-  #object_lock_enabled = no
-  tags                = local.tags
+  tags          = local.tags
 }
 
 module "ecs" {
@@ -156,6 +152,12 @@ resource "aws_service_discovery_private_dns_namespace" "sd_namespaces" {
   vpc         = module.vpc.vpc_id
 }
 
+resource "aws_service_discovery_http_namespace" "this" {
+  for_each = toset(var.namespaces)
+  
+  name = "${each.key}.${module.ecs.cluster_name}.local"
+}
+
 ################################################################################
 # Task Execution Role
 ################################################################################
@@ -205,4 +207,28 @@ resource "aws_iam_policy_attachment" "secret_manager_read" {
   name       = "${local.name}-execution-policy"
   roles      = [aws_iam_role.execution.name]
   policy_arn = aws_iam_policy.secrets_manager_read_policy.arn
+}
+
+resource "aws_iam_policy" "service_connect_create_log_group" {
+  name   = "ECSTaskExecutionCreateLogGroup"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+resource "aws_iam_policy_attachment" "service_connect_log" {
+  count      = var.enable_service_connect ? 1 : 0
+  name       = "${local.name}-execution-policy"
+  roles      = [aws_iam_role.execution.name]
+  policy_arn = aws_iam_policy.service_connect_create_log_group.arn
 }

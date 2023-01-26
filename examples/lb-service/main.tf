@@ -87,6 +87,10 @@ data "aws_service_discovery_dns_namespace" "sd_namespace" {
   type = "DNS_PRIVATE"
 }
 
+data "aws_service_discovery_http_namespace" "this" {
+  name = "${var.namespace}-sc.${data.aws_ecs_cluster.core_infra.cluster_name}.local"
+}
+
 ################################################################################
 # ECS Blueprint
 ################################################################################

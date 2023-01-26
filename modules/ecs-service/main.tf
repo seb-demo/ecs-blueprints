@@ -50,6 +50,25 @@ resource "aws_ecs_service" "this" {
     }
   }
 
+  dynamic "service_connect_configuration" {
+    for_each = var.service_connect_configuration
+    content {
+    enabled = true
+     namespace = service_connect_configuration.value.namespace
+     service {
+       port_name = service_connect_configuration.value.service.port_name
+       client_alias {
+        port = service_connect_configuration.value.service.client_aliases.port
+        dns_name = service_connect_configuration.value.service.client_aliases.dns_name
+      }
+     }
+     log_configuration {
+       log_driver = service_connect_configuration.value.log_configuration.log_driver
+       options = service_connect_configuration.value.log_configuration.options
+     } 
+    }
+  }
+
   deployment_controller {
     type = var.deployment_controller
   }
